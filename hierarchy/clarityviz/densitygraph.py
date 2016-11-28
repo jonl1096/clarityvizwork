@@ -4,14 +4,13 @@ from __future__ import print_function
 
 __author__ = 'seelviz'
 
-#import matplotlib as mpl
-#mpl.use('Agg')
+# import matplotlib as mpl
+# mpl.use('Agg')
 
 from skimage import data, img_as_float
 from skimage import exposure
 
 import plotly
-# need plotly.graph_objs for stuff like Scatter3d
 from plotly.graph_objs import *
 
 import cv2
@@ -22,8 +21,8 @@ import numpy as np
 import nibabel as nib
 
 # Tony's get_brain_figure stuff
-from plotly.offline import download_plotlyjs, init_notebook_mode, iplot
-#from plotly import tools
+from plotly.offline import download_plotlyjs#, init_notebook_mode, iplot
+from plotly import tools
 #plotly.offline.init_notebook_mode()
 
 import networkx as nx
@@ -38,17 +37,9 @@ class densitygraph(object):
     #def generate_heat_map(self):
 
     def __init__(self, token, graph_path = None):
-        """Constructor
-
-        :param token: The token of the brain.
-        :type token: str.
-        :param graph_path: The optional path to the graph.
-        :type graph_path: str.
-
-        """
         self._token = token
         if graph_path == None:
-           self._graph = nx.read_graphml(token + '/' + token + '.graphml')
+           self._graph = nx.read_graphml('output/' + token + '/' + token + '.graphml')
         else:
             self._graph = graph_path
         self._sortedList = None
@@ -57,9 +48,7 @@ class densitygraph(object):
         self._heatmapbrain = None
 
     def generate_density_graph(self):
-        """This finds the maximum number of edges and the densest nodes, and outputs it in a a plotly graph.
-
-        """
+        ## This finds the maximum number of edges and the densest node.
         G = self._graph
 
         maxEdges = 0
@@ -184,15 +173,14 @@ class densitygraph(object):
         self._sortedList = sortedList
         self._maxEdges = maxEdges
 
-        figure = self.get_brain_figure(G, '')
-        plotly.offline.plot(figure, filename = self._token + '/' + self._token + '_density.html')
+        #figure = self.get_brain_figure(G, '')
+        #plotly.offline.plot(figure, filename = self._token + '/' + self._token + '_density.html')
 
 
     def get_brain_figure(self, g, plot_title=''):
         """
         Returns the plotly figure object for vizualizing a 3d brain network.
-
-        :param g: The networkX object of brain
+        g: networkX object of brain
         """
 
         # grab the node positions from the graphML file
@@ -275,9 +263,6 @@ class densitygraph(object):
         return fig
 
     def generate_heat_map(self):
-        """Function to generate the heatmap of the nodes and colors.
-
-        """
         # Get list of all possible number of edges, in order
         setOfAllPossibleNumEdges = set(self._sortedList)
         listOfAllPossibleNumEdges = list(setOfAllPossibleNumEdges)
@@ -327,5 +312,5 @@ class densitygraph(object):
         mapping = Figure(data=data, layout=layout)
         #iplot(mapping, validate=False)
 
-        plotly.offline.plot(mapping, filename = self._token + '/' + self._token + '_heatmap' + '.html')
+        #plotly.offline.plot(mapping, filename = self._token + '/' + self._token + 'heatmap' + '.html')
         return mapping
